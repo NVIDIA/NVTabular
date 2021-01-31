@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Torch Dataloader &mdash; NVTabular 2020 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TensorFlow Dataloader" href="tensorflow_dataloader.html" />
+    <link rel="prev" title="ColumnGroup" href="column_group.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> NVTabular
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowItWorks.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ops/index.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="column_group.html">ColumnGroup</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Torch Dataloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nvtabular.framework_utils.torch.layers.embeddings">Torch Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_dataloader.html">TensorFlow Dataloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_dataloader.html#module-nvtabular.framework_utils.tensorflow.layers.embedding">TensorFlow Layers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/NVIDIA/NVTabular">Github Repo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Resources.html">Resources</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NVTabular</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Documentation</a> &raquo;</li>
+        
+      <li>Torch Dataloader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nvtabular.loader.torch">
+<span id="torch-dataloader"></span><h1>Torch Dataloader<a class="headerlink" href="#module-nvtabular.loader.torch" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="nvtabular.loader.torch.DLDataLoader">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.loader.torch.</code><code class="sig-name descname">DLDataLoader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n">torch.utils.data.dataset.Dataset<span class="p">[</span>T_co<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sampler</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>torch.utils.data.sampler.Sampler<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_sampler</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>torch.utils.data.sampler.Sampler<span class="p">[</span>Sequence<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">collate_fn</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>List<span class="p">[</span>T<span class="p">]</span><span class="p">]</span><span class="p">, </span>Any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pin_memory</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">drop_last</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">worker_init_fn</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multiprocessing_context</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">generator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">prefetch_factor</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">2</span></em>, <em class="sig-param"><span class="n">persistent_workers</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/loader/torch.html#DLDataLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.loader.torch.DLDataLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataloader.DataLoader</span></code></p>
+<p>This class is an extension of the torch dataloader.
+It is required to support the FastAI framework.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="nvtabular.loader.torch.TorchAsyncItr">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.loader.torch.</code><code class="sig-name descname">TorchAsyncItr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">cats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">conts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">parts_per_chunk</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">devices</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/loader/torch.html#TorchAsyncItr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.loader.torch.TorchAsyncItr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.IterableDataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">nvtabular.loader.backend.DataLoader</span></code></p>
+<p>This class creates batches of tensor. Each batch size is specified by the user.
+The data input requires an NVTabular dataset. Handles spillover to ensure all
+batches are the specified size until the final batch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>NVTabular dataset</em>) – </p></li>
+<li><p><strong>cats</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – the list of categorical columns in the dataset</p></li>
+<li><p><strong>conts</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – the list of continuous columns in the dataset</p></li>
+<li><p><strong>labels</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – the list of label columns in the dataset</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the size of each batch to supply to the model</p></li>
+<li><p><strong>shuffle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – enable/disable shuffling of dataset</p></li>
+<li><p><strong>parts_per_chunk</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of partitions from the iterator, an NVTabular Dataset, to concatenate into a “chunk”</p></li>
+<li><p><strong>devices</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – list representing all available GPU IDs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-nvtabular.framework_utils.torch.layers.embeddings">
+<span id="torch-layers"></span><h1>Torch Layers<a class="headerlink" href="#module-nvtabular.framework_utils.torch.layers.embeddings" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="nvtabular.framework_utils.torch.layers.embeddings.ConcatenatedEmbeddings">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.framework_utils.torch.layers.embeddings.</code><code class="sig-name descname">ConcatenatedEmbeddings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">embedding_table_shapes</span></em>, <em class="sig-param"><span class="n">dropout</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/framework_utils/torch/layers/embeddings.html#ConcatenatedEmbeddings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.framework_utils.torch.layers.embeddings.ConcatenatedEmbeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Map multiple categorical variables to concatenated embeddings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embedding_table_shapes</strong> – A dictionary mapping column names to
+(cardinality, embedding_size) tuples.</p></li>
+<li><p><strong>dropout</strong> – A float.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>x: An int64 Tensor with shape [batch_size, num_variables].</p>
+</dd>
+<dt>Outputs:</dt><dd><p>A Float Tensor with shape [batch_size, embedding_size_after_concat].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="nvtabular.framework_utils.torch.layers.embeddings.MultiHotEmbeddings">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.framework_utils.torch.layers.embeddings.</code><code class="sig-name descname">MultiHotEmbeddings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">embedding_table_shapes</span></em>, <em class="sig-param"><span class="n">dropout</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'sum'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/framework_utils/torch/layers/embeddings.html#MultiHotEmbeddings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.framework_utils.torch.layers.embeddings.MultiHotEmbeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Map multiple categorical variables to concatenated embeddings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embedding_dict_shapes</strong> – A dictionary mapping column names to
+(cardinality, embedding_size) tuples.</p></li>
+<li><p><strong>dropout</strong> – A float.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Inputs:</dt><dd><dl class="simple">
+<dt>x: A dictionary with multi-hot column name as keys and a tuple</dt><dd><p>containing the column values and offsets as values.</p>
+</dd>
+</dl>
+</dd>
+<dt>Outputs:</dt><dd><p>A Float Tensor with shape [batch_size, embedding_size_after_concat].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-nvtabular.framework_utils.torch.models"></span><dl class="py class">
+<dt id="nvtabular.framework_utils.torch.models.Model">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.framework_utils.torch.models.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">embedding_table_shapes</span></em>, <em class="sig-param"><span class="n">num_continuous</span></em>, <em class="sig-param"><span class="n">emb_dropout</span></em>, <em class="sig-param"><span class="n">layer_hidden_dims</span></em>, <em class="sig-param"><span class="n">layer_dropout_rates</span></em>, <em class="sig-param"><span class="n">max_output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bag_mode</span><span class="o">=</span><span class="default_value">'sum'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/framework_utils/torch/models.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.framework_utils.torch.models.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Generic Base Pytorch Model, that contains support for Categorical and Continous values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embedding_tables_shapes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – A dictionary representing the &lt;column&gt;: &lt;max cardinality of column&gt; for all
+categorical columns.</p></li>
+<li><p><strong>num_continuous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of continuous columns in data.</p></li>
+<li><p><strong>emb_dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>0 - 1</em>) – Sets the embedding dropout rate.</p></li>
+<li><p><strong>layer_hidden_dims</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – Hidden layer dimensions.</p></li>
+<li><p><strong>layer_dropout_rates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list of the layer dropout rates expressed as floats, 0-1, for each layer</p></li>
+<li><p><strong>max_output</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Signifies the max output.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tensorflow_dataloader.html" class="btn btn-neutral float-right" title="TensorFlow Dataloader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="column_group.html" class="btn btn-neutral float-left" title="ColumnGroup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, NVIDIA
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v0.1.0/api/torch_dataloader.html">v0.1.0</a></dd>
+      <dd><a href="../../v0.1.1/api/torch_dataloader.html">v0.1.1</a></dd>
+      <dd><a href="../../v0.2.0/api/torch_dataloader.html">v0.2.0</a></dd>
+      <dd><a href="../../v0.3.0/api/torch_dataloader.html">v0.3.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="torch_dataloader.html">main</a></dd>
+    </dl>
+  </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

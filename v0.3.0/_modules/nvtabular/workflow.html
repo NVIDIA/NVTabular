@@ -1,0 +1,1313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nvtabular.workflow &mdash; NVTabular 2020 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> NVTabular
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../HowItWorks.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NVTabular</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>nvtabular.workflow</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nvtabular.workflow</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020, NVIDIA CORPORATION.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">dask</span>
+<span class="kn">import</span> <span class="nn">dask_cudf</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">fsspec.core</span> <span class="kn">import</span> <span class="n">get_fs_token_paths</span>
+
+<span class="kn">from</span> <span class="nn">nvtabular.io.dask</span> <span class="kn">import</span> <span class="n">_ddf_to_dataset</span>
+<span class="kn">from</span> <span class="nn">nvtabular.io.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">_set_dtypes</span>
+<span class="kn">from</span> <span class="nn">nvtabular.io.shuffle</span> <span class="kn">import</span> <span class="n">Shuffle</span><span class="p">,</span> <span class="n">_check_shuffle_arg</span>
+<span class="kn">from</span> <span class="nn">nvtabular.io.writer_factory</span> <span class="kn">import</span> <span class="n">writer_factory</span>
+<span class="kn">from</span> <span class="nn">nvtabular.ops</span> <span class="kn">import</span> <span class="n">DFOperator</span><span class="p">,</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">StatOperator</span><span class="p">,</span> <span class="n">TransformOperator</span>
+<span class="kn">from</span> <span class="nn">nvtabular.worker</span> <span class="kn">import</span> <span class="n">clean_worker_cache</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;nvtabular&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseWorkflow"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow">[docs]</a><span class="k">class</span> <span class="nc">BaseWorkflow</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    BaseWorkflow class organizes and runs all the feature engineering</span>
+<span class="sd">    and pre-processing operators for your workflow.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    cat_names : list of str</span>
+<span class="sd">        Names of the categorical columns.</span>
+<span class="sd">    cont_names : list of str</span>
+<span class="sd">        Names of the continuous columns.</span>
+<span class="sd">    label_name : list of str</span>
+<span class="sd">        Names of the label column.</span>
+<span class="sd">    config : object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cat_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cont_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;continuous&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;categorical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cont_names</span> <span class="o">+</span> <span class="n">cat_names</span> <span class="o">+</span> <span class="n">label_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;continuous&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cont_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;categorical&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_file_num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delim</span> <span class="o">=</span> <span class="n">delim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;write_df&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;preproc_apply&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ops_in</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># create blank config and for later fill in</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">get_new_config</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_stats</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_register_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">operators</span> <span class="o">=</span> <span class="p">[</span><span class="n">operators</span><span class="p">]</span>
+        <span class="c1"># order matters!!!</span>
+        <span class="k">if</span> <span class="s2">&quot;full&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># full current will always be the most up to date version of columns,</span>
+            <span class="c1"># based on operators added</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">],)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">],)</span>
+        <span class="c1"># for all what does not exist in</span>
+        <span class="k">for</span> <span class="n">op</span><span class="p">,</span> <span class="n">col_focus</span><span class="p">,</span> <span class="n">chain_on_ops</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">operators</span><span class="p">:</span>
+            <span class="n">target_cols</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">col_focus</span><span class="p">,</span> <span class="n">chain_on_ops</span><span class="p">)</span>
+            <span class="c1"># grab the input target columns and the input extra columns</span>
+            <span class="n">extra_cols</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cur_extra_cols</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">current</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">full_list</span> <span class="o">=</span> <span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">cur_extra_cols</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">full_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target_cols</span><span class="p">:</span>
+                    <span class="n">extra_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_full_col_ctx_entry</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_dupes</span><span class="p">(</span><span class="n">full_dict</span><span class="p">)</span>
+        <span class="c1"># this will guide phase placement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_analyze_placement</span><span class="p">(</span><span class="n">full_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_analyze_placement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_dict</span><span class="p">):</span>
+        <span class="c1"># detect num collisions for each op_id to find correct placement.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">placement</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">op_id</span><span class="p">,</span> <span class="n">cols_ops</span> <span class="ow">in</span> <span class="n">full_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">op_id</span> <span class="ow">in</span> <span class="s2">&quot;base&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">in_tar_cols</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cols_ops</span>
+            <span class="n">in_tar_cols</span> <span class="o">=</span> <span class="n">in_tar_cols</span> <span class="k">if</span> <span class="n">in_tar_cols</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">placement</span><span class="p">[</span><span class="n">op_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detect_num_col_collisions</span><span class="p">(</span><span class="n">in_tar_cols</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">op_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_remove_dupes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_dict</span><span class="p">):</span>
+        <span class="n">remove_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">op_id</span><span class="p">,</span> <span class="n">cols_ops</span> <span class="ow">in</span> <span class="n">full_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">op_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;base&quot;</span><span class="p">:</span>
+                <span class="n">in_tar_cols</span><span class="p">,</span> <span class="n">in_extra_cols</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">fin_tar_cols</span><span class="p">,</span> <span class="n">fin_extra_cols</span> <span class="o">=</span> <span class="n">cols_ops</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">parent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_dict</span><span class="p">:</span>
+                <span class="n">remove_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">remove_keys</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">full_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_detect_cols_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">op_id</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a list of columns find the task AFTER which all</span>
+<span class="sd">        columns in list exists and return that task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">action_cols</span> <span class="o">=</span> <span class="n">columns</span>
+        <span class="c1"># start at the index provided, scan forward.</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">index</span><span class="p">:]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">op_id</span><span class="p">:</span>
+                <span class="c1"># reach yourself is end, and last found location</span>
+                <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">index</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;base&quot;</span><span class="p">:</span>
+                <span class="n">fin_tar_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="p">(</span>
+                    <span class="n">in_tar_cols</span><span class="p">,</span>
+                    <span class="n">in_extra_cols</span><span class="p">,</span>
+                    <span class="n">op</span><span class="p">,</span>
+                    <span class="n">parent</span><span class="p">,</span>
+                    <span class="n">fin_tar_cols</span><span class="p">,</span>
+                    <span class="n">fin_extra_cols</span><span class="p">,</span>
+                <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+            <span class="c1"># if anything is inside, find it and remove it</span>
+            <span class="c1"># found col, cannot remove in mid iteration... causes issues</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">fin_tar_cols</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">action_cols</span><span class="p">)</span>
+            <span class="n">action_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">action_cols</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">found</span><span class="p">]</span>
+            <span class="c1"># if empty found end</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">action_cols</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">index</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown columns found: </span><span class="si">{</span><span class="n">action_cols</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_detect_num_col_collisions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">op_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect the number of times you see all columns in tasks, before getting</span>
+<span class="sd">        to self in task list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_op</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">current_op</span> <span class="o">!=</span> <span class="n">op_id</span><span class="p">:</span>
+            <span class="n">current_op</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detect_cols_collision</span><span class="p">(</span><span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">op_id</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">indexes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">current_op</span><span class="p">,</span> <span class="n">index</span><span class="p">))</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">indexes</span>
+
+    <span class="k">def</span> <span class="nf">_check_op_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">_id_set</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_op_count</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+            <span class="c1"># reset id based on count of op in workflow already</span>
+            <span class="n">op_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">_id</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">delim</span><span class="si">}{</span><span class="nb">str</span><span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">op</span><span class="o">.</span><span class="n">_set_id</span><span class="p">(</span><span class="n">op_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_full_col_ctx_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">Operator</span><span class="p">):</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">_id</span>
+        <span class="n">tup_rep</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># requires target columns, extra columns (target+extra == all columns in df) and delim</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">TransformOperator</span><span class="p">):</span>
+            <span class="n">fin_tar_cols</span><span class="p">,</span> <span class="n">fin_extra_cols</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">out_columns</span><span class="p">(</span><span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delim</span><span class="p">)</span>
+            <span class="n">tup_rep</span> <span class="o">=</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">fin_tar_cols</span><span class="p">,</span> <span class="n">fin_extra_cols</span>
+        <span class="c1"># for stat ops, which do not change data in columns</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tup_rep</span><span class="p">:</span>
+            <span class="n">tup_rep</span> <span class="o">=</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">][</span><span class="n">op</span><span class="o">.</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">tup_rep</span>
+        <span class="k">return</span> <span class="n">tup_rep</span>
+
+    <span class="k">def</span> <span class="nf">_get_op_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops_in</span> <span class="k">if</span> <span class="n">op_id</span> <span class="ow">in</span> <span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># create new ordering based on placement and full_dict keys list</span>
+        <span class="n">ordered_ops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_order</span><span class="p">()</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">excess</span> <span class="o">=</span> <span class="n">ordered_ops</span>
+        <span class="k">while</span> <span class="n">excess</span><span class="p">:</span>
+            <span class="n">phase</span><span class="p">,</span> <span class="n">excess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_phase</span><span class="p">(</span><span class="n">excess</span><span class="p">)</span>
+            <span class="n">phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">phases</span>
+
+    <span class="k">def</span> <span class="nf">_find_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ops_ordered</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ops_origin</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ops_not_added</span> <span class="o">=</span> <span class="n">ops_origin</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">for</span> <span class="n">op_focus</span> <span class="ow">in</span> <span class="n">ops_origin</span><span class="p">:</span>
+            <span class="n">ops_added</span><span class="p">,</span> <span class="n">ops_not_added</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_order_single</span><span class="p">(</span><span class="n">op_focus</span><span class="p">,</span> <span class="n">ops_not_added</span><span class="p">)</span>
+            <span class="n">ops_ordered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ops_added</span><span class="p">)</span>
+        <span class="n">ops_ordered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ops_not_added</span><span class="p">)</span>
+        <span class="n">res_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ops_set</span> <span class="ow">in</span> <span class="n">ops_ordered</span><span class="p">:</span>
+            <span class="n">res_list</span> <span class="o">=</span> <span class="n">res_list</span> <span class="o">+</span> <span class="n">ops_set</span>
+        <span class="k">return</span> <span class="n">res_list</span>
+
+    <span class="k">def</span> <span class="nf">_find_order_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_focus</span><span class="p">,</span> <span class="n">op_ids</span><span class="p">):</span>
+        <span class="n">op_ordered</span><span class="p">,</span> <span class="n">not_added</span><span class="p">,</span> <span class="n">parents_ref</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">op_id</span> <span class="ow">in</span> <span class="n">op_ids</span><span class="p">:</span>
+            <span class="n">place</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">placement</span><span class="p">[</span><span class="n">op_id</span><span class="p">]</span>
+            <span class="c1"># k is op._id, v is all finds... need second to last</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">op_after</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">op_after</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">place</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">op_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;full&quot;</span><span class="p">][</span><span class="n">op_id</span><span class="p">]</span>
+            <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">fin_tar_cols</span><span class="p">,</span> <span class="n">fin_extra_cols</span> <span class="o">=</span> <span class="n">op_task</span>
+            <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="n">parents_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">op_after</span> <span class="ow">in</span> <span class="n">op_focus</span> <span class="ow">and</span> <span class="n">op_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parents_ref</span> <span class="ow">and</span> <span class="n">op_after</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parents_ref</span><span class="p">:</span>
+                <span class="c1"># op has no requirements move to front</span>
+                <span class="n">op_ordered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">not_added</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">op_ordered</span><span class="p">,</span> <span class="n">not_added</span>
+
+    <span class="k">def</span> <span class="nf">_create_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_ordered</span><span class="p">):</span>
+        <span class="c1"># given the correctly ordered op_task list (full_dict),</span>
+        <span class="c1"># decide index splits for individual phases</span>
+        <span class="n">parents_ref</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">op_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">op_ordered</span><span class="p">):</span>
+            <span class="n">target_cols</span><span class="p">,</span> <span class="n">extra_cols</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">fin_tar_cols</span><span class="p">,</span> <span class="n">fin_extra_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span>
+                <span class="s2">&quot;full&quot;</span>
+            <span class="p">][</span><span class="n">op_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">_id</span> <span class="ow">in</span> <span class="n">parents_ref</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">op_ordered</span><span class="p">[:</span><span class="n">idx</span><span class="p">],</span> <span class="n">op_ordered</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="n">parents_ref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">op_ordered</span><span class="p">,</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_get_target_cols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+        <span class="c1"># all operators in a list are chained therefore based on parent in list</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">target_cols</span> <span class="o">=</span> <span class="n">operators</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_default_in</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target_cols</span> <span class="o">=</span> <span class="n">operators</span><span class="o">.</span><span class="n">get_default_in</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">target_cols</span>
+
+    <span class="k">def</span> <span class="nf">_config_add_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function serves to translate the operator list api into backend</span>
+<span class="sd">        ready dependency dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        operators: list</span>
+<span class="sd">            list of operators or single operator to be added into the</span>
+<span class="sd">            preprocessing phase</span>
+<span class="sd">        phase:</span>
+<span class="sd">            identifier for feature engineering FE or preprocessing PP</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_target_cols</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_cols</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">target_cols</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="n">target_cols</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Did not add operators: </span><span class="si">{</span><span class="n">operators</span><span class="si">}</span><span class="s2">, target columns is empty.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">and</span> <span class="n">target_cols</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">phase</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">operators</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_op_count</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">phase</span><span class="p">][</span><span class="n">target_cols</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No main key </span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2"> or sub key </span><span class="si">{</span><span class="n">target_cols</span><span class="si">}</span><span class="s2"> found in config&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">op_default_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">,</span> <span class="n">default_in</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">operators</span> <span class="o">=</span> <span class="p">[</span><span class="n">operators</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">operators</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">default_in</span> <span class="o">!=</span> <span class="n">default_in</span> <span class="ow">and</span> <span class="n">op</span><span class="o">.</span><span class="n">default_in</span> <span class="o">!=</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> was not added. This op is not designed for use&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; with </span><span class="si">{</span><span class="n">default_in</span><span class="si">}</span><span class="s2"> columns&quot;</span>
+                <span class="p">)</span>
+                <span class="n">operators</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">operators</span>
+
+<div class="viewcode-block" id="BaseWorkflow.add_feature"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.add_feature">[docs]</a>    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds feature engineering operator(s), while mapping</span>
+<span class="sd">        to the correct columns given operator dependencies.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        operators : object</span>
+<span class="sd">            list of operators or single operator to be</span>
+<span class="sd">            added into the feature engineering phase</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">operators</span> <span class="o">=</span> <span class="p">[</span><span class="n">operators</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_add_ops</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="s2">&quot;FE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.add_cat_feature"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.add_cat_feature">[docs]</a>    <span class="k">def</span> <span class="nf">add_cat_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds categorical feature engineering operator(s), while mapping</span>
+<span class="sd">        to the correct columns given operator dependencies.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        operators : object</span>
+<span class="sd">            list of categorical operators or single operator to be</span>
+<span class="sd">            added into the feature engineering phase</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">operators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_default_check</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="s2">&quot;categorical&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operators</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.add_cont_feature"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.add_cont_feature">[docs]</a>    <span class="k">def</span> <span class="nf">add_cont_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds continuous feature engineering operator(s)</span>
+<span class="sd">        to the workflow.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        operators : object</span>
+<span class="sd">            continuous objects such as FillMissing, Clip and LogOp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">operators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_default_check</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="s2">&quot;continuous&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operators</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.add_cat_preprocess"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.add_cat_preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">add_cat_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds categorical pre-processing operator(s)</span>
+<span class="sd">        to the workflow.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        operators : object</span>
+<span class="sd">            categorical objects such as Categorify</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">operators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_default_check</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="s2">&quot;categorical&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operators</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_preprocess</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.add_cont_preprocess"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.add_cont_preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">add_cont_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds continuous pre-processing operator(s)</span>
+<span class="sd">        to the workflow.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        operators : object</span>
+<span class="sd">            continuous objects such as Normalize</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">operators</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_default_check</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="s2">&quot;continuous&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operators</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_preprocess</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.add_preprocess"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.add_preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">add_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operators</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds preprocessing operator(s), while mapping</span>
+<span class="sd">        to the correct columns given operator dependencies.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        operators : object</span>
+<span class="sd">            list of operators or single operator, Op/s to be</span>
+<span class="sd">            added into the preprocessing phase</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># must add last operator from FE for get_default_in</span>
+        <span class="n">target_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_target_cols</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;FE&quot;</span><span class="p">][</span><span class="n">target_cols</span><span class="p">]:</span>
+            <span class="n">op_to_add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;FE&quot;</span><span class="p">][</span><span class="n">target_cols</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">op_to_add</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">op_to_add</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">and</span> <span class="n">op_to_add</span><span class="p">:</span>
+            <span class="n">op_to_add</span> <span class="o">=</span> <span class="n">op_to_add</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">op_to_add</span><span class="p">:</span>
+            <span class="n">op_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="n">op_to_add</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">op_to_add</span> <span class="o">=</span> <span class="n">op_to_add</span> <span class="o">+</span> <span class="n">operators</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">op_to_add</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_add_ops</span><span class="p">(</span><span class="n">op_to_add</span><span class="p">,</span> <span class="s2">&quot;PP&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.finalize"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When using operator list api, this allows the user to declare they</span>
+<span class="sd">        have finished adding all operators and are ready to start processing</span>
+<span class="sd">        data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.load_config"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">pro</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function extracts all the operators from the given phases and produces a</span>
+<span class="sd">        set of phases with necessary operators to complete configured pipeline.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            this object contains the phases and user specified operators</span>
+<span class="sd">        pro: bool</span>
+<span class="sd">            signals if config should be parsed via dependency dictionary or</span>
+<span class="sd">            operator list api</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># separate FE and PP</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pro</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compile_dict_from_list</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">task_sets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">master_task_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">task_set</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">task_sets</span><span class="p">[</span><span class="n">task_set</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tasks</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">task_set</span><span class="p">],</span> <span class="n">task_set</span><span class="p">,</span> <span class="n">master_task_list</span><span class="p">)</span>
+            <span class="n">master_task_list</span> <span class="o">=</span> <span class="n">master_task_list</span> <span class="o">+</span> <span class="n">task_sets</span><span class="p">[</span><span class="n">task_set</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_ops</span><span class="p">(</span><span class="n">master_task_list</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_phases</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">master_task_list</span><span class="p">,</span> <span class="n">phases</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_final_col_refs</span><span class="p">(</span><span class="n">task_sets</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtl</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+        <span class="n">real_phases</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span>
+            <span class="n">real_phase</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">op_id</span> <span class="ow">in</span> <span class="n">phase</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">op_task</span> <span class="ow">in</span> <span class="n">mtl</span><span class="p">:</span>
+                    <span class="n">op</span> <span class="o">=</span> <span class="n">op_task</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">_id</span> <span class="o">==</span> <span class="n">op_id</span><span class="p">:</span>
+                        <span class="n">real_phase</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op_task</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="n">real_phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">real_phase</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">real_phases</span>
+
+    <span class="k">def</span> <span class="nf">_compile_dict_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function retrieves all the operators from the different keys in</span>
+<span class="sd">        the config object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            this dictionary has phases(key) and the corresponding list of operators for</span>
+<span class="sd">            each phase.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">task_list</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ret</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">task_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
+                        <span class="n">obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                        <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">op</span><span class="p">,</span> <span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">_id</span><span class="p">]</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">[]))</span>
+
+                <span class="n">ret</span><span class="p">[</span><span class="n">phase</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tasks</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_create_final_col_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_sets</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function creates a reference of all the operators whose produced</span>
+<span class="sd">        columns will be available in the final set of columns. First step in</span>
+<span class="sd">        creating the final columns list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;final&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># all preprocessing tasks have a parent operator, it could be None</span>
+        <span class="c1"># task (operator, main_columns_class, col_sub_key,  required_operators)</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">task_sets</span><span class="p">[</span><span class="s2">&quot;PP&quot;</span><span class="p">]:</span>
+            <span class="c1"># an operator cannot exist twice</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">final</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">final</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># detect incorrect dependency loop</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">final</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">task</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+                    <span class="n">final</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="c1"># stats dont create columns so id would not be in columns ctx</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__base__</span> <span class="o">==</span> <span class="n">StatOperator</span><span class="p">:</span>
+                <span class="n">final</span><span class="p">[</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+        <span class="c1"># add labels too specific because not specifically required in init</span>
+        <span class="n">final</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col_ctx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">final</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]:</span>
+                <span class="n">final</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">final</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">col_ctx</span>
+        <span class="c1"># if no operators run in preprocessing we grab base columns</span>
+        <span class="k">if</span> <span class="s2">&quot;continuous&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">final</span><span class="p">:</span>
+            <span class="c1"># set base columns</span>
+            <span class="n">final</span><span class="p">[</span><span class="s2">&quot;continuous&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;categorical&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">final</span><span class="p">:</span>
+            <span class="n">final</span><span class="p">[</span><span class="s2">&quot;categorical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">final</span><span class="p">:</span>
+            <span class="n">final</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;final&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;final&quot;</span><span class="p">][</span><span class="s2">&quot;ctx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final</span>
+
+<div class="viewcode-block" id="BaseWorkflow.create_final_cols"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.create_final_cols">[docs]</a>    <span class="k">def</span> <span class="nf">create_final_cols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function creates an entry in the columns context dictionary,</span>
+<span class="sd">        not the references to the operators. In this method we detail all</span>
+<span class="sd">        operator references with actual column names, and create a list.</span>
+<span class="sd">        The entry represents the final columns that should be in finalized</span>
+<span class="sd">        dataframe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># still adding double need to stop that</span>
+        <span class="n">final_ctx</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ctx_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;final&quot;</span><span class="p">][</span><span class="s2">&quot;ctx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">to_add</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">ctx_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ctx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">ctx</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
+                <span class="n">to_add</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">ctx</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">to_add</span>
+                    <span class="k">else</span> <span class="n">to_add</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">ctx</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">final_ctx</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">final_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_add</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">final_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">to_add</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;final&quot;</span><span class="p">][</span><span class="s2">&quot;cols&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_ctx</span></div>
+
+<div class="viewcode-block" id="BaseWorkflow.get_final_cols_names"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.get_final_cols_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_final_cols_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all the column names after preprocessing and feature</span>
+<span class="sd">        engineering.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        col_type : str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">col_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c_names</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="n">col_type</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">c_names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col_names</span><span class="p">:</span>
+                    <span class="n">col_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">col_names</span></div>
+
+    <span class="k">def</span> <span class="nf">_build_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">task_set</span><span class="p">,</span> <span class="n">master_task_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        task_dict: the task dictionary retrieved from the config</span>
+<span class="sd">        Based on input config information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># task format = (operator, main_columns_class, col_sub_key,  required_operators, parent)</span>
+        <span class="n">dep_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cols</span><span class="p">,</span> <span class="n">task_list</span> <span class="ow">in</span> <span class="n">task_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">target_op</span><span class="p">,</span> <span class="n">dep_grp</span> <span class="ow">in</span> <span class="n">task_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target_op</span><span class="p">,</span> <span class="n">DFOperator</span><span class="p">):</span>
+                    <span class="c1"># check that the required stat is grabbed</span>
+                    <span class="c1"># for all necessary parents</span>
+                    <span class="k">for</span> <span class="n">opo</span> <span class="ow">in</span> <span class="n">target_op</span><span class="o">.</span><span class="n">req_stats</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_check_op_count</span><span class="p">(</span><span class="n">opo</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ops_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opo</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                        <span class="n">dep_grp</span> <span class="o">=</span> <span class="n">dep_grp</span> <span class="k">if</span> <span class="n">dep_grp</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+                        <span class="n">dep_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">opo</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">dep_grp</span><span class="p">,</span> <span class="p">[],</span> <span class="n">target_op</span><span class="p">))</span>
+                <span class="c1"># after req stats handle target_op</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ops_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_op</span><span class="o">.</span><span class="n">_id</span><span class="p">)</span>
+                <span class="n">dep_grp</span> <span class="o">=</span> <span class="n">dep_grp</span> <span class="k">if</span> <span class="n">dep_grp</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+                <span class="n">req_ops</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target_op</span><span class="p">,</span> <span class="s2">&quot;req_stats&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">target_op</span><span class="o">.</span><span class="n">req_stats</span>
+                <span class="n">dep_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">target_op</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">dep_grp</span><span class="p">,</span> <span class="n">req_ops</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="k">return</span> <span class="n">dep_tasks</span>
+
+    <span class="k">def</span> <span class="nf">_run_trans_ops_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">tasks</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">op</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">task</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">DFOperator</span><span class="p">):</span>
+                <span class="n">gdf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply_op</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">TransformOperator</span><span class="p">):</span>
+                <span class="n">gdf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply_op</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="o">=</span><span class="n">target_cols</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gdf</span>
+
+<div class="viewcode-block" id="BaseWorkflow.apply_ops"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.BaseWorkflow.apply_ops">[docs]</a>    <span class="k">def</span> <span class="nf">apply_ops</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">start_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gdf: cudf dataframe</span>
+<span class="sd">        Controls the application of registered preprocessing phase op</span>
+<span class="sd">        tasks, can only be used after apply has been performed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># put phases that you want to run represented in a slice</span>
+        <span class="c1"># dont run stat_ops in apply</span>
+        <span class="c1"># run the PP ops</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start_phase</span> <span class="k">if</span> <span class="n">start_phase</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">end_phase</span> <span class="k">if</span> <span class="n">end_phase</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">phase_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_trans_ops_for_phase</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="n">phase_index</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timings</span><span class="p">[</span><span class="s2">&quot;preproc_apply&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+            <span class="k">if</span> <span class="n">phase_index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">writer</span> <span class="ow">and</span> <span class="n">output_path</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">writer</span><span class="o">.</span><span class="n">need_cal_col_names</span><span class="p">:</span>
+                    <span class="n">cat_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_final_cols_names</span><span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">)</span>
+                    <span class="n">cont_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_final_cols_names</span><span class="p">(</span><span class="s2">&quot;continuous&quot;</span><span class="p">)</span>
+                    <span class="n">label_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_final_cols_names</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">set_col_names</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">label_names</span><span class="p">,</span> <span class="n">cats</span><span class="o">=</span><span class="n">cat_names</span><span class="p">,</span> <span class="n">conts</span><span class="o">=</span><span class="n">cont_names</span><span class="p">)</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">need_cal_col_names</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">start_write</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="c1"># Special dtype conversion</span>
+                <span class="n">gdf</span> <span class="o">=</span> <span class="n">_set_dtypes</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">)</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">gdf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timings</span><span class="p">[</span><span class="s2">&quot;write_df&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_write</span>
+        <span class="k">return</span> <span class="n">gdf</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stat_op</span><span class="p">):</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">[</span><span class="n">stat</span> <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stat_op</span><span class="o">.</span><span class="n">registered_stats</span><span class="p">()</span> <span class="k">if</span> <span class="n">stat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="c1"># add if doesnt exist</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stat_op</span><span class="o">.</span><span class="n">stats_collected</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if it does exist, append to it</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">stat_op</span><span class="o">.</span><span class="n">stats_collected</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">main_obj</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">stats_drop</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">stat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stats_drop</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">stats_drop</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stat</span>
+        <span class="n">main_obj</span><span class="p">[</span><span class="s2">&quot;stats&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats_drop</span>
+        <span class="n">main_obj</span><span class="p">[</span><span class="s2">&quot;columns_ctx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;full&quot;</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">main_obj</span><span class="p">[</span><span class="s2">&quot;columns_ctx&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">main_obj</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_set_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stats_dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">stats_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">stat</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+            <span class="n">main_obj</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+            <span class="n">_set_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_obj</span><span class="p">[</span><span class="s2">&quot;stats&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span> <span class="o">=</span> <span class="n">main_obj</span><span class="p">[</span><span class="s2">&quot;columns_ctx&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">clear_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="get_new_config"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.get_new_config">[docs]</a><span class="k">def</span> <span class="nf">get_new_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    boiler config object, to be filled in with targeted operator tasks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;FE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;FE&quot;</span><span class="p">][</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;FE&quot;</span><span class="p">][</span><span class="s2">&quot;continuous&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;FE&quot;</span><span class="p">][</span><span class="s2">&quot;categorical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;PP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;PP&quot;</span><span class="p">][</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;PP&quot;</span><span class="p">][</span><span class="s2">&quot;continuous&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;PP&quot;</span><span class="p">][</span><span class="s2">&quot;categorical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="Workflow"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow">[docs]</a><span class="k">class</span> <span class="nc">Workflow</span><span class="p">(</span><span class="n">BaseWorkflow</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dask-based NVTabular Workflow Class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ddf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shuffle_parts</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_phase</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">set_ddf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddf</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddf</span><span class="p">,</span> <span class="p">(</span><span class="n">dask_cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ddf</span> <span class="o">=</span> <span class="n">ddf</span>
+            <span class="k">if</span> <span class="n">shuffle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_shuffle_parts</span> <span class="o">=</span> <span class="n">shuffle</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ddf type not supported.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_ddf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ddf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No dask_cudf frame available.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ddf</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+            <span class="c1"># Right now we can&#39;t distinguish between input columns and generated columns</span>
+            <span class="c1"># in the dataset, we don&#39;t limit the columm set right now in the to_ddf call</span>
+            <span class="c1"># (https://github.com/NVIDIA/NVTabular/issues/409 )</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ddf</span><span class="o">.</span><span class="n">to_ddf</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shuffle_parts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ddf</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_aggregated_op</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">ops</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">:</span>
+            <span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">logic</span><span class="p">,</span> <span class="n">stats_context</span> <span class="o">=</span> <span class="n">op</span>
+            <span class="n">gdf</span> <span class="o">=</span> <span class="n">logic</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">stats_context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gdf</span>
+
+    <span class="k">def</span> <span class="nf">_aggregated_dask_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddf</span><span class="p">,</span> <span class="n">transforms</span><span class="p">):</span>
+        <span class="c1"># Assuming order of transforms corresponds to dependency ordering</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">ddf</span><span class="o">.</span><span class="n">_meta</span>
+        <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
+            <span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">logic</span><span class="p">,</span> <span class="n">stats_context</span> <span class="o">=</span> <span class="n">transform</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="n">logic</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">stats_context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ddf</span><span class="o">.</span><span class="n">map_partitions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_aggregated_op</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Workflow.exec_phase"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.exec_phase">[docs]</a>    <span class="k">def</span> <span class="nf">exec_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase_index</span><span class="p">,</span> <span class="n">record_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">update_ddf</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gather necessary column statistics in single pass.</span>
+<span class="sd">        Execute statistics for one phase only (given by phase index),</span>
+<span class="sd">        but (laxily) perform all transforms for current and previous phases.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">transforms</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Need to perform all transforms up to, and including,</span>
+        <span class="c1"># the current phase (not only the current phase).  We do this</span>
+        <span class="c1"># so that we can avoid persisitng intermediate transforms</span>
+        <span class="c1"># needed for statistics.</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_phase</span><span class="p">,</span> <span class="n">phase_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="n">ind</span><span class="p">]:</span>
+                <span class="n">op</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">task</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">TransformOperator</span><span class="p">):</span>
+                    <span class="n">stats_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">DFOperator</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                    <span class="n">logic</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply_op</span>
+                    <span class="n">transforms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">logic</span><span class="p">,</span> <span class="n">stats_context</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">StatOperator</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown Operator Type&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Perform transforms as single dask task (per ddf partition)</span>
+        <span class="n">_ddf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ddf</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">transforms</span><span class="p">:</span>
+            <span class="n">_ddf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_dask_transform</span><span class="p">(</span><span class="n">_ddf</span><span class="p">,</span> <span class="n">transforms</span><span class="p">)</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">record_stats</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[</span><span class="n">phase_index</span><span class="p">]:</span>
+                <span class="n">op</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">task</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">StatOperator</span><span class="p">):</span>
+                    <span class="n">stats</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">op</span><span class="o">.</span><span class="n">stat_logic</span><span class="p">(</span><span class="n">_ddf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">cols_grp</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">),</span> <span class="n">op</span><span class="p">))</span>
+                    <span class="c1"># TODO: Don&#39;t want to update the internal ddf here if we can</span>
+                    <span class="c1"># avoid it.  It may be better to just add the new column?</span>
+                    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">_ddf_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">set_ddf</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">_ddf_out</span><span class="p">)</span>
+                        <span class="c1"># We are updating the internal `ddf`, so we shouldn&#39;t</span>
+                        <span class="c1"># redo transforms up to this phase in later phases.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_base_phase</span> <span class="o">=</span> <span class="n">phase_index</span>
+
+        <span class="c1"># Compute statistics if necessary</span>
+        <span class="k">if</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+                    <span class="n">computed_stats</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                    <span class="n">op</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">computed_stats</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_statistics</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+                    <span class="n">op</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dask</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;synchronous&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">computed_stats</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="n">r</span>
+                    <span class="n">op</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">computed_stats</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_statistics</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+                    <span class="n">op</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">stats</span>
+
+        <span class="c1"># Update interal ddf.</span>
+        <span class="c1"># Cancel futures and delete _ddf if allowed.</span>
+        <span class="k">if</span> <span class="n">transforms</span> <span class="ow">and</span> <span class="n">update_ddf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_ddf</span><span class="p">(</span><span class="n">_ddf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">_ddf</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">_ddf</span></div>
+
+<div class="viewcode-block" id="Workflow.apply"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">apply_offline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">record_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;./ds_export&quot;</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;parquet&quot;</span><span class="p">,</span>
+        <span class="n">out_files_per_proc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_io_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs all the preprocessing and feature engineering operators.</span>
+<span class="sd">        Also, shuffles the data if a `shuffle` option is specified.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        dataset : object</span>
+<span class="sd">        apply_offline : boolean</span>
+<span class="sd">            Runs operators in offline mode or not</span>
+<span class="sd">        record_stats : boolean</span>
+<span class="sd">            Record the stats in file or not. Only available</span>
+<span class="sd">            for apply_offline=True</span>
+<span class="sd">        shuffle : nvt.io.Shuffle enum</span>
+<span class="sd">            How to shuffle the output dataset. Shuffling is only</span>
+<span class="sd">            performed if the data is written to disk. For all options,</span>
+<span class="sd">            other than `None` (which means no shuffling), the partitions</span>
+<span class="sd">            of the underlying dataset/ddf will be randomly ordered. If</span>
+<span class="sd">            `PER_PARTITION` is specified, each worker/process will also</span>
+<span class="sd">            shuffle the rows within each partition before splitting and</span>
+<span class="sd">            appending the data to a number (`out_files_per_proc`) of output</span>
+<span class="sd">            files. Output files are distinctly mapped to each worker process.</span>
+<span class="sd">            If `PER_WORKER` is specified, each worker will follow the same</span>
+<span class="sd">            procedure as `PER_PARTITION`, but will re-shuffle each file after</span>
+<span class="sd">            all data is persisted.  This results in a full shuffle of the</span>
+<span class="sd">            data processed by each worker.  To improve performace, this option</span>
+<span class="sd">            currently uses host-memory `BytesIO` objects for the intermediate</span>
+<span class="sd">            persist stage. The `FULL` option is not yet implemented.</span>
+<span class="sd">        output_path : string</span>
+<span class="sd">            Path to write processed/shuffled output data</span>
+<span class="sd">        output_format : {&quot;parquet&quot;, &quot;hugectr&quot;, None}</span>
+<span class="sd">            Output format to write processed/shuffled data. If None,</span>
+<span class="sd">            no output dataset will be written (and shuffling skipped).</span>
+<span class="sd">        out_files_per_proc : integer</span>
+<span class="sd">            Number of files to create (per process) after</span>
+<span class="sd">            shuffling the data</span>
+<span class="sd">        num_io_threads : integer</span>
+<span class="sd">            Number of IO threads to use for writing the output dataset.</span>
+<span class="sd">            For `0` (default), no dedicated IO threads will be used.</span>
+<span class="sd">        dtypes : dict</span>
+<span class="sd">            Dictionary containing desired datatypes for output columns.</span>
+<span class="sd">            Keys are column names, values are datatypes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check shuffle argument</span>
+        <span class="n">shuffle</span> <span class="o">=</span> <span class="n">_check_shuffle_arg</span><span class="p">(</span><span class="n">shuffle</span><span class="p">)</span>
+
+        <span class="c1"># If no tasks have been loaded then we need to load internal config</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+
+        <span class="c1"># Gather statstics (if apply_offline), and/or transform</span>
+        <span class="c1"># and write out processed data</span>
+        <span class="k">if</span> <span class="n">apply_offline</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_and_process_graph</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+                <span class="n">record_stats</span><span class="o">=</span><span class="n">record_stats</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">out_files_per_proc</span><span class="o">=</span><span class="n">out_files_per_proc</span><span class="p">,</span>
+                <span class="n">num_io_threads</span><span class="o">=</span><span class="n">num_io_threads</span><span class="p">,</span>
+                <span class="n">dtypes</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterate_online</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">out_files_per_proc</span><span class="o">=</span><span class="n">out_files_per_proc</span><span class="p">,</span>
+                <span class="n">num_io_threads</span><span class="o">=</span><span class="n">num_io_threads</span><span class="p">,</span>
+                <span class="n">dtypes</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.iterate_online"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.iterate_online">[docs]</a>    <span class="k">def</span> <span class="nf">iterate_online</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">end_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">out_files_per_proc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">apply_ops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">num_io_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate through dataset and (optionally) apply/shuffle/write.&quot;&quot;&quot;</span>
+        <span class="c1"># Check shuffle argument</span>
+        <span class="n">shuffle</span> <span class="o">=</span> <span class="n">_check_shuffle_arg</span><span class="p">(</span><span class="n">shuffle</span><span class="p">)</span>
+
+        <span class="c1"># Check if we have a (supported) writer</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="ow">or</span> <span class="s2">&quot;./&quot;</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">writer_factory</span><span class="p">(</span>
+            <span class="n">output_format</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">out_files_per_proc</span><span class="p">,</span>
+            <span class="n">shuffle</span><span class="p">,</span>
+            <span class="n">bytes_io</span><span class="o">=</span><span class="p">(</span><span class="n">shuffle</span> <span class="o">==</span> <span class="n">Shuffle</span><span class="o">.</span><span class="n">PER_WORKER</span><span class="p">),</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="n">num_io_threads</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Iterate through dataset, apply ops, and write out processed data</span>
+        <span class="k">if</span> <span class="n">apply_ops</span><span class="p">:</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ctx</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">][</span><span class="s2">&quot;base&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">gdf</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_iter</span><span class="p">(</span><span class="n">shuffle</span><span class="o">=</span><span class="p">(</span><span class="n">shuffle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">apply_ops</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="n">writer</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="n">dtypes</span><span class="p">)</span>
+
+        <span class="c1"># Close writer and write general/specialized metadata</span>
+        <span class="k">if</span> <span class="n">writer</span><span class="p">:</span>
+            <span class="n">general_md</span><span class="p">,</span> <span class="n">special_md</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="c1"># Note that we &quot;could&quot; have the special and general metadata</span>
+            <span class="c1"># written during `writer.close()` (just above) for the single-GPU case.</span>
+            <span class="c1"># Instead, the metadata logic is separated from the `Writer` object to</span>
+            <span class="c1"># simplify multi-GPU integration. When using Dask, we cannot assume</span>
+            <span class="c1"># that the &quot;shared&quot; metadata files can/will be written by the same</span>
+            <span class="c1"># process that writes the data.</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">write_special_metadata</span><span class="p">(</span><span class="n">special_md</span><span class="p">,</span> <span class="n">writer</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">write_general_metadata</span><span class="p">(</span><span class="n">general_md</span><span class="p">,</span> <span class="n">writer</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.update_stats"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.update_stats">[docs]</a>    <span class="k">def</span> <span class="nf">update_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">end_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Collect statistics only.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_and_process_graph</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">end_phase</span><span class="o">=</span><span class="n">end_phase</span><span class="p">,</span> <span class="n">record_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.build_and_process_graph"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.build_and_process_graph">[docs]</a>    <span class="k">def</span> <span class="nf">build_and_process_graph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">end_phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">record_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">out_files_per_proc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">apply_ops</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">num_io_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build Dask-task graph for workflow.</span>
+
+<span class="sd">        Full graph is only executed if `output_format` is specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check shuffle argument</span>
+        <span class="n">shuffle</span> <span class="o">=</span> <span class="n">_check_shuffle_arg</span><span class="p">(</span><span class="n">shuffle</span><span class="p">)</span>
+
+        <span class="n">end</span> <span class="o">=</span> <span class="n">end_phase</span> <span class="k">if</span> <span class="n">end_phase</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;parquet&quot;</span><span class="p">,</span> <span class="s2">&quot;hugectr&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output format </span><span class="si">{</span><span class="n">output_format</span><span class="si">}</span><span class="s2"> not yet supported with Dask.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Clear worker caches to be &quot;safe&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">clean_worker_cache</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">clean_worker_cache</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ddf</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="p">(</span><span class="n">shuffle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">apply_ops</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_base_phase</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Set _base_phase</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">[:</span><span class="n">end</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exec_phase</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">record_stats</span><span class="o">=</span><span class="n">record_stats</span><span class="p">,</span> <span class="n">update_ddf</span><span class="o">=</span><span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_base_phase</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Re-Set _base_phase</span>
+
+        <span class="k">if</span> <span class="n">dtypes</span><span class="p">:</span>
+            <span class="n">ddf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ddf</span><span class="p">()</span>
+            <span class="n">_meta</span> <span class="o">=</span> <span class="n">_set_dtypes</span><span class="p">(</span><span class="n">ddf</span><span class="o">.</span><span class="n">_meta</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_ddf</span><span class="p">(</span><span class="n">ddf</span><span class="o">.</span><span class="n">map_partitions</span><span class="p">(</span><span class="n">_set_dtypes</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">_meta</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">output_format</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="ow">or</span> <span class="s2">&quot;./&quot;</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ddf_to_dataset</span><span class="p">(</span>
+                <span class="n">output_path</span><span class="p">,</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                <span class="n">out_files_per_proc</span><span class="o">=</span><span class="n">out_files_per_proc</span><span class="p">,</span>
+                <span class="n">num_threads</span><span class="o">=</span><span class="n">num_io_threads</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.write_to_dataset"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.write_to_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">write_to_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">apply_ops</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">out_files_per_proc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;parquet&quot;</span><span class="p">,</span>
+        <span class="n">iterate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">nfiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_io_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write data to shuffled parquet dataset.</span>
+
+<span class="sd">        Assumes statistics are already gathered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check shuffle argument</span>
+        <span class="n">shuffle</span> <span class="o">=</span> <span class="n">_check_shuffle_arg</span><span class="p">(</span><span class="n">shuffle</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nfiles</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;nfiles is deprecated. Use out_files_per_proc&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">out_files_per_proc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out_files_per_proc</span> <span class="o">=</span> <span class="n">nfiles</span>
+        <span class="n">out_files_per_proc</span> <span class="o">=</span> <span class="n">out_files_per_proc</span> <span class="ow">or</span> <span class="mi">1</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">iterate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterate_online</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">out_files_per_proc</span><span class="o">=</span><span class="n">out_files_per_proc</span><span class="p">,</span>
+                <span class="n">apply_ops</span><span class="o">=</span><span class="n">apply_ops</span><span class="p">,</span>
+                <span class="n">num_io_threads</span><span class="o">=</span><span class="n">num_io_threads</span><span class="p">,</span>
+                <span class="n">dtypes</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_and_process_graph</span><span class="p">(</span>
+                <span class="n">dataset</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                <span class="n">record_stats</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span>
+                <span class="n">out_files_per_proc</span><span class="o">=</span><span class="n">out_files_per_proc</span><span class="p">,</span>
+                <span class="n">apply_ops</span><span class="o">=</span><span class="n">apply_ops</span><span class="p">,</span>
+                <span class="n">num_io_threads</span><span class="o">=</span><span class="n">num_io_threads</span><span class="p">,</span>
+                <span class="n">dtypes</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.ddf_to_dataset"><a class="viewcode-back" href="../../api/workflow.html#nvtabular.workflow.Workflow.ddf_to_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">ddf_to_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">out_files_per_proc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;parquet&quot;</span><span class="p">,</span>
+        <span class="n">num_threads</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dask-based dataset output.</span>
+
+<span class="sd">        Currently supports parquet only.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;parquet&quot;</span><span class="p">,</span> <span class="s2">&quot;hugectr&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only parquet/hugectr output supported with Dask.&quot;</span><span class="p">)</span>
+        <span class="n">ddf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ddf</span><span class="p">()</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">get_fs_token_paths</span><span class="p">(</span><span class="n">output_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fs</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shuffle</span> <span class="ow">or</span> <span class="n">out_files_per_proc</span><span class="p">:</span>
+
+            <span class="n">cat_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_final_cols_names</span><span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">)</span>
+            <span class="n">cont_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_final_cols_names</span><span class="p">(</span><span class="s2">&quot;continuous&quot;</span><span class="p">)</span>
+            <span class="n">label_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_final_cols_names</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Output dask_cudf DataFrame to dataset</span>
+            <span class="n">_ddf_to_dataset</span><span class="p">(</span>
+                <span class="n">ddf</span><span class="p">,</span>
+                <span class="n">fs</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="p">,</span>
+                <span class="n">out_files_per_proc</span><span class="p">,</span>
+                <span class="n">cat_names</span><span class="p">,</span>
+                <span class="n">cont_names</span><span class="p">,</span>
+                <span class="n">label_names</span><span class="p">,</span>
+                <span class="n">output_format</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span>
+                <span class="n">num_threads</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Default (shuffle=None and out_files_per_proc=None)</span>
+        <span class="c1"># Just use `dask_cudf.to_parquet`</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="n">ddf</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fut</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;synchronous&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fut</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, NVIDIA
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.3.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../v0.1.0/index.html">v0.1.0</a></dd>
+      <dd><a href="../../../v0.1.1/index.html">v0.1.1</a></dd>
+      <dd><a href="../../../v0.2.0/index.html">v0.2.0</a></dd>
+      <dd><a href="workflow.html">v0.3.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

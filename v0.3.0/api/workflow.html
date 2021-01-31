@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Workflow &mdash; NVTabular 2020 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dataset" href="dataset.html" />
+    <link rel="prev" title="API Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> NVTabular
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowItWorks.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html">Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ops/index.html">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_dataloader.html">Torch Dataloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_dataloader.html#module-nvtabular.framework_utils.torch.layers.embeddings">Torch Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_dataloader.html">TensorFlow Dataloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tensorflow_dataloader.html#module-nvtabular.framework_utils.tensorflow.layers.embedding">TensorFlow Layers</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NVTabular</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Documentation</a> &raquo;</li>
+        
+      <li>Workflow</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-nvtabular.workflow">
+<span id="workflow"></span><h1>Workflow<a class="headerlink" href="#module-nvtabular.workflow" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="nvtabular.workflow.BaseWorkflow">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.workflow.</code><code class="sig-name descname">BaseWorkflow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cat_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cont_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">label_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">delim</span><span class="o">=</span><span class="default_value">'_'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>BaseWorkflow class organizes and runs all the feature engineering
+and pre-processing operators for your workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cat_names</strong> (<em>list of str</em>) – Names of the categorical columns.</p></li>
+<li><p><strong>cont_names</strong> (<em>list of str</em>) – Names of the continuous columns.</p></li>
+<li><p><strong>label_name</strong> (<em>list of str</em>) – Names of the label column.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.add_cat_feature">
+<code class="sig-name descname">add_cat_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operators</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.add_cat_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.add_cat_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds categorical feature engineering operator(s), while mapping
+to the correct columns given operator dependencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – list of categorical operators or single operator to be
+added into the feature engineering phase</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.add_cat_preprocess">
+<code class="sig-name descname">add_cat_preprocess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operators</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.add_cat_preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.add_cat_preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds categorical pre-processing operator(s)
+to the workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – categorical objects such as Categorify</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.add_cont_feature">
+<code class="sig-name descname">add_cont_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operators</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.add_cont_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.add_cont_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds continuous feature engineering operator(s)
+to the workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – continuous objects such as FillMissing, Clip and LogOp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.add_cont_preprocess">
+<code class="sig-name descname">add_cont_preprocess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operators</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.add_cont_preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.add_cont_preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds continuous pre-processing operator(s)
+to the workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – continuous objects such as Normalize</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.add_feature">
+<code class="sig-name descname">add_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operators</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.add_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.add_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds feature engineering operator(s), while mapping
+to the correct columns given operator dependencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – list of operators or single operator to be
+added into the feature engineering phase</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.add_preprocess">
+<code class="sig-name descname">add_preprocess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">operators</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.add_preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.add_preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds preprocessing operator(s), while mapping
+to the correct columns given operator dependencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>operators</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – list of operators or single operator, Op/s to be
+added into the preprocessing phase</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.apply_ops">
+<code class="sig-name descname">apply_ops</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span></em>, <em class="sig-param"><span class="n">start_phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end_phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">writer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.apply_ops"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.apply_ops" title="Permalink to this definition">¶</a></dt>
+<dd><p>gdf: cudf dataframe
+Controls the application of registered preprocessing phase op
+tasks, can only be used after apply has been performed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.create_final_cols">
+<code class="sig-name descname">create_final_cols</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.create_final_cols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.create_final_cols" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates an entry in the columns context dictionary,
+not the references to the operators. In this method we detail all
+operator references with actual column names, and create a list.
+The entry represents the final columns that should be in finalized
+dataframe.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.finalize">
+<code class="sig-name descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>When using operator list api, this allows the user to declare they
+have finished adding all operators and are ready to start processing
+data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.get_final_cols_names">
+<code class="sig-name descname">get_final_cols_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">col_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.get_final_cols_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.get_final_cols_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the column names after preprocessing and feature
+engineering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>col_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.BaseWorkflow.load_config">
+<code class="sig-name descname">load_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">pro</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#BaseWorkflow.load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.BaseWorkflow.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function extracts all the operators from the given phases and produces a
+set of phases with necessary operators to complete configured pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – this object contains the phases and user specified operators</p></li>
+<li><p><strong>pro</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – signals if config should be parsed via dependency dictionary or
+operator list api</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="nvtabular.workflow.Workflow">
+<em class="property">class </em><code class="sig-prename descclassname">nvtabular.workflow.</code><code class="sig-name descname">Workflow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dask-based NVTabular Workflow Class</p>
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">apply_offline</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">record_stats</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_path</span><span class="o">=</span><span class="default_value">'./ds_export'</span></em>, <em class="sig-param"><span class="n">output_format</span><span class="o">=</span><span class="default_value">'parquet'</span></em>, <em class="sig-param"><span class="n">out_files_per_proc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_io_threads</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs all the preprocessing and feature engineering operators.
+Also, shuffles the data if a <cite>shuffle</cite> option is specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – </p></li>
+<li><p><strong>apply_offline</strong> (<em>boolean</em>) – Runs operators in offline mode or not</p></li>
+<li><p><strong>record_stats</strong> (<em>boolean</em>) – Record the stats in file or not. Only available
+for apply_offline=True</p></li>
+<li><p><strong>shuffle</strong> (<em>nvt.io.Shuffle enum</em>) – How to shuffle the output dataset. Shuffling is only
+performed if the data is written to disk. For all options,
+other than <cite>None</cite> (which means no shuffling), the partitions
+of the underlying dataset/ddf will be randomly ordered. If
+<cite>PER_PARTITION</cite> is specified, each worker/process will also
+shuffle the rows within each partition before splitting and
+appending the data to a number (<cite>out_files_per_proc</cite>) of output
+files. Output files are distinctly mapped to each worker process.
+If <cite>PER_WORKER</cite> is specified, each worker will follow the same
+procedure as <cite>PER_PARTITION</cite>, but will re-shuffle each file after
+all data is persisted.  This results in a full shuffle of the
+data processed by each worker.  To improve performace, this option
+currently uses host-memory <cite>BytesIO</cite> objects for the intermediate
+persist stage. The <cite>FULL</cite> option is not yet implemented.</p></li>
+<li><p><strong>output_path</strong> (<em>string</em>) – Path to write processed/shuffled output data</p></li>
+<li><p><strong>output_format</strong> (<em>{&quot;parquet&quot;</em><em>, </em><em>&quot;hugectr&quot;</em><em>, </em><em>None}</em>) – Output format to write processed/shuffled data. If None,
+no output dataset will be written (and shuffling skipped).</p></li>
+<li><p><strong>out_files_per_proc</strong> (<em>integer</em>) – Number of files to create (per process) after
+shuffling the data</p></li>
+<li><p><strong>num_io_threads</strong> (<em>integer</em>) – Number of IO threads to use for writing the output dataset.
+For <cite>0</cite> (default), no dedicated IO threads will be used.</p></li>
+<li><p><strong>dtypes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary containing desired datatypes for output columns.
+Keys are column names, values are datatypes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.build_and_process_graph">
+<code class="sig-name descname">build_and_process_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">end_phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">record_stats</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out_files_per_proc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apply_ops</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">num_io_threads</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.build_and_process_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.build_and_process_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build Dask-task graph for workflow.</p>
+<p>Full graph is only executed if <cite>output_format</cite> is specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.ddf_to_dataset">
+<code class="sig-name descname">ddf_to_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output_path</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out_files_per_proc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_format</span><span class="o">=</span><span class="default_value">'parquet'</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.ddf_to_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.ddf_to_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dask-based dataset output.</p>
+<p>Currently supports parquet only.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.exec_phase">
+<code class="sig-name descname">exec_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase_index</span></em>, <em class="sig-param"><span class="n">record_stats</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">update_ddf</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.exec_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.exec_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gather necessary column statistics in single pass.
+Execute statistics for one phase only (given by phase index),
+but (laxily) perform all transforms for current and previous phases.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.iterate_online">
+<code class="sig-name descname">iterate_online</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">end_phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out_files_per_proc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">apply_ops</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">num_io_threads</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.iterate_online"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.iterate_online" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate through dataset and (optionally) apply/shuffle/write.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.update_stats">
+<code class="sig-name descname">update_stats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">end_phase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.update_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.update_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect statistics only.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="nvtabular.workflow.Workflow.write_to_dataset">
+<code class="sig-name descname">write_to_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">apply_ops</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">out_files_per_proc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_format</span><span class="o">=</span><span class="default_value">'parquet'</span></em>, <em class="sig-param"><span class="n">iterate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">nfiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_io_threads</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#Workflow.write_to_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.Workflow.write_to_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data to shuffled parquet dataset.</p>
+<p>Assumes statistics are already gathered.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="nvtabular.workflow.get_new_config">
+<code class="sig-prename descclassname">nvtabular.workflow.</code><code class="sig-name descname">get_new_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nvtabular/workflow.html#get_new_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nvtabular.workflow.get_new_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>boiler config object, to be filled in with targeted operator tasks</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dataset.html" class="btn btn-neutral float-right" title="Dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, NVIDIA
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.3.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v0.1.0/api/workflow.html">v0.1.0</a></dd>
+      <dd><a href="../../v0.1.1/api/workflow.html">v0.1.1</a></dd>
+      <dd><a href="../../v0.2.0/api/workflow.html">v0.2.0</a></dd>
+      <dd><a href="workflow.html">v0.3.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/api/workflow.html">main</a></dd>
+    </dl>
+  </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

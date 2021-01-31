@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nvtabular.ops.join_groupby &mdash; NVTabular 2020 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> NVTabular
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../HowItWorks.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NVTabular</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nvtabular.ops.join_groupby</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nvtabular.ops.join_groupby</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020, NVIDIA CORPORATION.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">cudf</span>
+<span class="kn">import</span> <span class="nn">cupy</span>
+<span class="kn">from</span> <span class="nn">dask.core</span> <span class="kn">import</span> <span class="n">flatten</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">categorify</span> <span class="k">as</span> <span class="n">nvt_cat</span>
+<span class="kn">from</span> <span class="nn">.groupby_statistics</span> <span class="kn">import</span> <span class="n">GroupbyStatistics</span>
+<span class="kn">from</span> <span class="nn">.operator</span> <span class="kn">import</span> <span class="n">CAT</span>
+<span class="kn">from</span> <span class="nn">.transform_operator</span> <span class="kn">import</span> <span class="n">DFOperator</span>
+
+
+<div class="viewcode-block" id="JoinGroupby"><a class="viewcode-back" href="../../../api/ops/groupby.html#nvtabular.ops.JoinGroupby">[docs]</a><span class="k">class</span> <span class="nc">JoinGroupby</span><span class="p">(</span><span class="n">DFOperator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    One of the ways to create new features is to calculate</span>
+<span class="sd">    the basic statistics of the data that is grouped by categorical</span>
+<span class="sd">    features. This operator groups the data by the given categorical</span>
+<span class="sd">    feature(s) and calculates the desired statistics of requested continuous</span>
+<span class="sd">    features (along with the count of rows in each group). The aggregated</span>
+<span class="sd">    statistics are merged with the data (by joining on the desired</span>
+<span class="sd">    categorical columns).</span>
+
+<span class="sd">    Example usage::</span>
+
+<span class="sd">        # Initialize the workflow</span>
+<span class="sd">        proc = nvt.Workflow(</span>
+<span class="sd">            cat_names=CATEGORICAL_COLUMNS,</span>
+<span class="sd">            cont_names=CONTINUOUS_COLUMNS,</span>
+<span class="sd">            label_name=LABEL_COLUMNS</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Add JoinGroupby to the workflow</span>
+<span class="sd">        proc.add_feature(</span>
+<span class="sd">            JoinGroupby(</span>
+<span class="sd">                columns=[&#39;cat1&#39;, &#39;cat2&#39;, &#39;cat3&#39;], # columns which are groupby</span>
+<span class="sd">                cont_names=[&#39;num1&#39;], # continuous column, which the statistics are applied to</span>
+<span class="sd">                stats=[&#39;sum&#39;,&#39;count&#39;]), # statistics, which are applied</span>
+<span class="sd">        )</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    cont_names : list of str</span>
+<span class="sd">        The continuous column names to calculate statistics for</span>
+<span class="sd">        (for each unique group in each column in `columns`).</span>
+<span class="sd">    stats : list of str, default []</span>
+<span class="sd">        List of statistics to calculate for each unique group. Note</span>
+<span class="sd">        that &quot;count&quot; corresponds to the group itself, while all</span>
+<span class="sd">        other statistics correspond to a specific continuous column.</span>
+<span class="sd">        Supported statistics include [&quot;count&quot;, &quot;sum&quot;, &quot;mean&quot;, &quot;std&quot;, &quot;var&quot;].</span>
+<span class="sd">    columns : list of str or list(str), default None</span>
+<span class="sd">        Categorical columns (or multi-column &quot;groups&quot;) to target for this op.</span>
+<span class="sd">        If None, the operation will target all known categorical columns.</span>
+<span class="sd">    tree_width : dict or int, optional</span>
+<span class="sd">        Passed to `GroupbyStatistics` dependency.</span>
+<span class="sd">    out_path : str, optional</span>
+<span class="sd">        Passed to `GroupbyStatistics` dependency.</span>
+<span class="sd">    on_host : bool, default True</span>
+<span class="sd">        Passed to `GroupbyStatistics` dependency.</span>
+<span class="sd">    name_sep : str, default &quot;_&quot;</span>
+<span class="sd">        String separator to use between concatenated column names</span>
+<span class="sd">        for multi-column groups.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_in</span> <span class="o">=</span> <span class="n">CAT</span>
+    <span class="n">default_out</span> <span class="o">=</span> <span class="n">CAT</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cont_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">stats</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">],</span>
+        <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tree_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cat_cache</span><span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="p">,</span>
+        <span class="n">out_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_host</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">name_sep</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">,</span>
+        <span class="n">stat_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_groups</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_sep</span> <span class="o">=</span> <span class="n">name_sep</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">columns</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">column_groups</span> <span class="o">=</span> <span class="n">columns</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">container</span><span class="o">=</span><span class="nb">list</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_groups</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">nvt_cat</span><span class="o">.</span><span class="n">_make_name</span><span class="p">(</span><span class="o">*</span><span class="n">group</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name_sep</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cont_names</span> <span class="o">=</span> <span class="n">cont_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">stats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_width</span> <span class="o">=</span> <span class="n">tree_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_path</span> <span class="o">=</span> <span class="n">out_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_host</span> <span class="o">=</span> <span class="n">on_host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cat_cache</span> <span class="o">=</span> <span class="n">cat_cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat_name</span> <span class="o">=</span> <span class="n">stat_name</span> <span class="ow">or</span> <span class="s2">&quot;gb_categories&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">req_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">GroupbyStatistics</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">column_groups</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                <span class="n">concat_groups</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">cont_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cont_names</span><span class="p">,</span>
+                <span class="n">stats</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">,</span>
+                <span class="n">tree_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_width</span><span class="p">,</span>
+                <span class="n">out_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">out_path</span><span class="p">,</span>
+                <span class="n">on_host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on_host</span><span class="p">,</span>
+                <span class="n">stat_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stat_name</span><span class="p">,</span>
+                <span class="n">name_sep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name_sep</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">op_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">:</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">target_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">stats_context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">new_gdf</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s2">&quot;__tmp__&quot;</span>  <span class="c1"># Temporary column for sorting</span>
+        <span class="n">gdf</span><span class="p">[</span><span class="n">tmp</span><span class="p">]</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_groups</span><span class="p">:</span>
+            <span class="n">cat_names</span><span class="p">,</span> <span class="n">multi_col_group</span> <span class="o">=</span> <span class="n">nvt_cat</span><span class="o">.</span><span class="n">_get_multicolumn_names</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">column_groups</span><span class="p">,</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_sep</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">multi_col_group</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">cat_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">target_columns</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cat_names</span><span class="p">:</span>
+            <span class="n">storage_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">multi_col_group</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">stats_context</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stat_name</span><span class="p">][</span><span class="n">storage_name</span><span class="p">]</span>
+            <span class="n">selection_l</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">selection_r</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">storage_name</span><span class="p">]</span>
+
+            <span class="n">stat_gdf</span> <span class="o">=</span> <span class="n">nvt_cat</span><span class="o">.</span><span class="n">_read_groupby_stat_df</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">storage_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cat_cache</span><span class="p">)</span>
+            <span class="n">tran_gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="n">selection_l</span> <span class="o">+</span> <span class="p">[</span><span class="n">tmp</span><span class="p">]]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+                <span class="n">stat_gdf</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="n">selection_l</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="n">selection_r</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+            <span class="p">)</span>
+            <span class="n">tran_gdf</span> <span class="o">=</span> <span class="n">tran_gdf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+            <span class="n">tran_gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">selection_l</span> <span class="o">+</span> <span class="p">[</span><span class="n">tmp</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">new_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tran_gdf</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+            <span class="n">new_gdf</span><span class="p">[</span><span class="n">new_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">tran_gdf</span><span class="p">[</span><span class="n">new_cols</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">tmp</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_gdf</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, NVIDIA
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.3.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../v0.1.0/index.html">v0.1.0</a></dd>
+      <dd><a href="../../../../v0.1.1/index.html">v0.1.1</a></dd>
+      <dd><a href="../../../../v0.2.0/index.html">v0.2.0</a></dd>
+      <dd><a href="join_groupby.html">v0.3.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nvtabular.ops.join_external &mdash; NVTabular 2020 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> NVTabular
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../HowItWorks.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NVTabular</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>nvtabular.ops.join_external</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nvtabular.ops.join_external</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020, NVIDIA CORPORATION.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">cudf</span>
+<span class="kn">import</span> <span class="nn">cupy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+
+<span class="kn">from</span> <span class="nn">nvtabular.worker</span> <span class="kn">import</span> <span class="n">fetch_table_data</span><span class="p">,</span> <span class="n">get_worker_cache</span>
+
+<span class="kn">from</span> <span class="nn">.operator</span> <span class="kn">import</span> <span class="n">ALL</span>
+<span class="kn">from</span> <span class="nn">.transform_operator</span> <span class="kn">import</span> <span class="n">TransformOperator</span>
+
+
+<div class="viewcode-block" id="JoinExternal"><a class="viewcode-back" href="../../../api/ops/joinexternal.html#nvtabular.ops.JoinExternal">[docs]</a><span class="k">class</span> <span class="nc">JoinExternal</span><span class="p">(</span><span class="n">TransformOperator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Join each dataset partition to an external table. For performance</span>
+<span class="sd">    reasons, only &quot;left&quot; and &quot;inner&quot; join transformations are supported.</span>
+
+<span class="sd">    Example usage::</span>
+
+<span class="sd">        # Initialize the workflow</span>
+<span class="sd">        proc = nvt.Workflow(</span>
+<span class="sd">            cat_names=CATEGORICAL_COLUMNS,</span>
+<span class="sd">            cont_names=CONTINUOUS_COLUMNS,</span>
+<span class="sd">            label_name=LABEL_COLUMNS</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Load dataset which should be joined to the main dataset</span>
+<span class="sd">        df_external = cudf.read_parquet(&#39;external.parquet&#39;)</span>
+
+<span class="sd">        # Add JoinExternal to the workflow</span>
+<span class="sd">        proc.add_preprocess(</span>
+<span class="sd">            nvt.ops.JoinExternal(</span>
+<span class="sd">                df_external,</span>
+<span class="sd">                on=[&#39;key1&#39;, &#39;key2&#39;],</span>
+<span class="sd">                on_ext=[&#39;key1_ext&#39;, &#39;key2_ext&#39;],</span>
+<span class="sd">                how=&#39;left&#39;,</span>
+<span class="sd">                columns_ext=[&#39;key1_ext&#39;, &#39;key2_ext&#39;, &#39;cat1&#39;, &#39;cat2&#39;, &#39;num1&#39;],</span>
+<span class="sd">                kind_ext=&#39;cudf&#39;,</span>
+<span class="sd">                cache=&#39;device&#39;</span>
+<span class="sd">            )</span>
+<span class="sd">        )</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    df_ext : DataFrame, pyarrow.Table, or file path</span>
+<span class="sd">        The external table to join to each partition of the dataset.</span>
+<span class="sd">    on : str or list(str)</span>
+<span class="sd">        Column name(s) to merge on</span>
+<span class="sd">    how : {&quot;left&quot;, &quot;inner&quot;}; default &quot;left&quot;</span>
+<span class="sd">        Type of join operation to perform.</span>
+<span class="sd">    on_ext : str or list(str); Optional</span>
+<span class="sd">        Column name(s) on external table to join on. By default,</span>
+<span class="sd">        we assume ``on_ext`` is the same as ``on``.</span>
+<span class="sd">    columns_ext : list(str); Optional</span>
+<span class="sd">        Subset of columns to select from external table before join.</span>
+<span class="sd">    drop_duplicates_ext : bool; Default False</span>
+<span class="sd">        Drop duplicates from external table before join.</span>
+<span class="sd">    kind_ext : {&quot;arrow&quot;, &quot;cudf&quot;, &quot;pandas&quot;, &quot;parquet&quot;, &quot;csv&quot;}</span>
+<span class="sd">        Format of ``df_ext``.  If nothing is specified, the format</span>
+<span class="sd">        will be inferred.</span>
+<span class="sd">    cache : {&quot;device&quot;, &quot;host&quot;, &quot;disk&quot;}</span>
+<span class="sd">        Where to cache ``df_ext`` between transformations. Only used</span>
+<span class="sd">        if the data is originally stored on disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_in</span> <span class="o">=</span> <span class="n">ALL</span>
+    <span class="n">default_out</span> <span class="o">=</span> <span class="n">ALL</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">df_ext</span><span class="p">,</span>
+        <span class="n">on</span><span class="p">,</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">on_ext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">columns_ext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">drop_duplicates_ext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind_ext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cache</span><span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="n">on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span> <span class="o">=</span> <span class="n">df_ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_ext</span> <span class="o">=</span> <span class="n">on_ext</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">how</span> <span class="o">=</span> <span class="n">how</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="o">=</span> <span class="n">kind_ext</span> <span class="ow">or</span> <span class="n">_detect_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_ext</span> <span class="o">=</span> <span class="n">columns_ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_duplicates_ext</span> <span class="o">=</span> <span class="n">drop_duplicates_ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">how</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;inner&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only left join is currently supported.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;arrow&quot;</span><span class="p">,</span> <span class="s2">&quot;cudf&quot;</span><span class="p">,</span> <span class="s2">&quot;pandas&quot;</span><span class="p">,</span> <span class="s2">&quot;parquet&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kind_ext option not recognized.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_ext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Define _ext, depending on `kind_ext`</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="o">==</span> <span class="s2">&quot;cudf&quot;</span><span class="p">:</span>
+            <span class="n">_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="o">==</span> <span class="s2">&quot;pandas&quot;</span><span class="p">:</span>
+            <span class="n">_ext</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="o">==</span> <span class="s2">&quot;arrow&quot;</span><span class="p">:</span>
+            <span class="n">_ext</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_arrow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="o">==</span> <span class="s2">&quot;parquet&quot;</span><span class="p">:</span>
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">read_parquet</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_ext</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">cudf</span><span class="o">.</span><span class="n">read_csv</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Disk format not yet supported&quot;</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">get_worker_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span><span class="p">)</span> <span class="k">as</span> <span class="n">cached_table</span><span class="p">:</span>
+                <span class="n">_ext</span> <span class="o">=</span> <span class="n">fetch_table_data</span><span class="p">(</span>
+                    <span class="n">cached_table</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">df_ext</span><span class="p">,</span>
+                    <span class="n">cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span>
+                    <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ext</span><span class="p">,</span>
+                    <span class="n">reader</span><span class="o">=</span><span class="n">reader</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Take subset of columns if a list is specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_ext</span><span class="p">:</span>
+            <span class="n">_ext</span> <span class="o">=</span> <span class="n">_ext</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_ext</span><span class="p">]</span>
+
+        <span class="c1"># Drop duplicates if requested</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_duplicates_ext</span><span class="p">:</span>
+            <span class="n">_ext</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_ext</span>
+
+    <span class="k">def</span> <span class="nf">apply_op</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gdf</span><span class="p">:</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">columns_ctx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">input_cols</span><span class="p">,</span>
+        <span class="n">target_cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">],</span>
+        <span class="n">stats_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">target_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">input_cols</span><span class="p">,</span> <span class="n">target_cols</span><span class="p">)</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="s2">&quot;__tmp__&quot;</span>  <span class="c1"># Temporary column for sorting</span>
+        <span class="n">gdf</span><span class="p">[</span><span class="n">tmp</span><span class="p">]</span> <span class="o">=</span> <span class="n">cupy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gdf</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+        <span class="n">new_gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ext</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">on_ext</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">how</span><span class="p">)</span>
+        <span class="n">new_gdf</span> <span class="o">=</span> <span class="n">new_gdf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="n">new_gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">tmp</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">tmp</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">new_gdf</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_columns_ctx</span><span class="p">(</span><span class="n">columns_ctx</span><span class="p">,</span> <span class="n">input_cols</span><span class="p">,</span> <span class="n">new_gdf</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">target_columns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_gdf</span></div>
+
+
+<span class="k">def</span> <span class="nf">_detect_format</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Utility to detect the format of `data`&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cudf</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;cudf&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;pandas&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;arrow&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file_type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">file_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;parquet&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data format not recognized.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_type</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, NVIDIA
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.3.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../v0.1.0/index.html">v0.1.0</a></dd>
+      <dd><a href="../../../../v0.1.1/index.html">v0.1.1</a></dd>
+      <dd><a href="../../../../v0.2.0/index.html">v0.2.0</a></dd>
+      <dd><a href="join_external.html">v0.3.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
